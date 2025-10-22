@@ -1,5 +1,5 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/modules/common/AppSidebar";
+import { AppSidebar } from "@/modules/common/components/AppSidebar/AppSidebar";
 
 import { UserButton } from "@clerk/nextjs";
 

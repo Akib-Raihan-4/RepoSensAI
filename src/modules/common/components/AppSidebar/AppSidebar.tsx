@@ -2,6 +2,14 @@
 
 import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
@@ -14,39 +22,12 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import {
-  Bot,
-  CreditCard,
-  LayoutDashboard,
-  Plus,
-  Presentation,
-} from "lucide-react";
+import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const items = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Q&A",
-    url: "/qa",
-    icon: Bot,
-  },
-  {
-    title: "Meetings",
-    url: "/meetings",
-    icon: Presentation,
-  },
-  {
-    title: "Billings",
-    url: "/billings",
-    icon: CreditCard,
-  },
-];
+import { CreateProjectForm } from "../CreateProjectForm/CreateProjectForm";
+import { Routes } from "./AppSidebar.routes";
 
 const project = [
   {
@@ -76,7 +57,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
-            {items.map((item) => (
+            {Routes.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild>
                   <Link
@@ -119,12 +100,24 @@ export function AppSidebar() {
               ))}
               <div className="h2"></div>
               <SidebarMenuItem>
-                <Link href="/create">
-                  <Button size="sm" variant="outline" className="w-full">
-                    <Plus />
-                    {open && "Create Project"}
-                  </Button>
-                </Link>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button size="sm" variant="outline" className="w-full">
+                      <Plus />
+                      {open && "Create Project"}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Link your GitHub Repository</DialogTitle>
+                      <DialogDescription>
+                        Enter your repository details to link it with
+                        RepoSensAI.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <CreateProjectForm />
+                  </DialogContent>
+                </Dialog>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
