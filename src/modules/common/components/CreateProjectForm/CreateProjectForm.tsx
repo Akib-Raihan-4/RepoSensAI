@@ -17,6 +17,9 @@ import {
   type FormInput,
   defaultValues,
 } from "./CreateProjectForm.schema";
+import { api } from "@/trpc/react";
+import { toast } from "sonner";
+import useRefetch from "@/hooks/use-refetch";
 
 export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
   const form = useForm<FormInput>({
@@ -25,10 +28,20 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
     mode: "onChange",
   });
 
+  const createProject = api.project.createProject.useMutation();
+  const refetch = useRefetch();
+
   const onSubmit = (data: FormInput) => {
-    console.log("Form Submitted:", data);
+    createProject.mutate(data, {
+      onSuccess: () => {
+        toast.success("Project created successfully!");
+        refetch();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    });
     form.reset(defaultValues);
-    onSuccess?.();
   };
 
   return (
@@ -50,7 +63,7 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
 
         <FormField
           control={form.control}
-          name="repoUrl"
+          name="githubUrl"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Repository URL</FormLabel>
@@ -79,8 +92,12 @@ export function CreateProjectForm({ onSuccess }: { onSuccess?: () => void }) {
           )}
         />
 
-        <Button type="submit" className="w-full">
-          Create Project
+        <Button
+          type="submit"
+          className="w-full"
+          disabled={!form.formState.isValid}
+        >
+          {createProject.isPending ? "Creating..." : "Create Project"}
         </Button>
       </form>
     </Form>

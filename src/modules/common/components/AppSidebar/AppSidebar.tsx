@@ -28,21 +28,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CreateProjectForm } from "../CreateProjectForm/CreateProjectForm";
 import { Routes } from "./AppSidebar.routes";
+import useProjects from "@/hooks/use-project";
 
-const project = [
-  {
-    name: "Project - 1",
-  },
-  {
-    name: "Project - 2",
-  },
-  {
-    name: "Project - 3",
-  },
-];
 export function AppSidebar() {
   const pathname = usePathname();
   const { open } = useSidebar();
+  const { projects, projectId, setProjectId } = useProjects();
   return (
     <Sidebar collapsible="icon" variant="floating">
       <SidebarHeader>
@@ -78,22 +69,26 @@ export function AppSidebar() {
           <SidebarGroupLabel>Your Projects</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {project.map((item) => (
-                <SidebarMenuItem key={item.name}>
+              {projects?.map((project) => (
+                <SidebarMenuItem key={project.name}>
                   <SidebarMenuButton asChild>
-                    <div>
+                    <div
+                      onClick={() => {
+                        setProjectId(project.id);
+                      }}
+                      className="cursor-pointer"
+                    >
                       <div
                         className={cn(
                           "text-primary flex size-6 items-center justify-center rounded-sm border bg-white text-sm",
                           {
-                            "bg-primary text-white": true,
-                            // "bg-primary text-white": project.id = project.id
+                            "bg-primary text-white": project.id === projectId,
                           },
                         )}
                       >
-                        {item.name[0]}
+                        {project.name[0]}
                       </div>
-                      <span>{item.name}</span>
+                      <span>{project.name}</span>
                     </div>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
