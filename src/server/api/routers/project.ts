@@ -1,5 +1,7 @@
 import { formSchema } from "@/modules/common/components/CreateProjectForm/CreateProjectForm.schema";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { pullCommits } from "@/lib/github";
+import z from "zod";
 
 export const projectRouter = createTRPCRouter({
   createProject: protectedProcedure
@@ -17,6 +19,8 @@ export const projectRouter = createTRPCRouter({
         },
       });
 
+      await pullCommits(project.id);
+
       return project;
     }),
   getAll: protectedProcedure.query(async ({ ctx }) => {
@@ -27,8 +31,23 @@ export const projectRouter = createTRPCRouter({
             userId: ctx.user.userId!,
           },
         },
-        deletedAt: null
+        deletedAt: null,
       },
     });
   }),
+
+  getCommits: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      pullCommits(input.projectId).then().catch(console.error);
+      return await ctx.db.commit.findMany({
+        where: {
+          projectId: input.projectId,
+        },
+      });
+    }),
 });
